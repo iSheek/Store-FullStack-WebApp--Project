@@ -32,25 +32,6 @@ public static class DataExtension
         {
             options.UseNpgsql(connString);
         });
-        /*
-        builder.Services.AddDbContext<StoreContext>(options =>
-             options.UseNpgsql(connString)
-             .UseSeeding((context, _) =>
-             {
-                if(!context.Set<Category>().Any())
-                 {
-                     context.Set<Category>().AddRange(
-                        new Category {Name = "Food"},
-                        new Category {Name = "Cooking utensil"},
-                        new Category {Name = "Other"}
-                     );
-
-                     context.SaveChanges();
-                 }
-
-             })
-             );
-             */
     }
 
 
