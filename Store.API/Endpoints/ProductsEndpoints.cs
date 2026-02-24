@@ -72,6 +72,14 @@ public static class ProductsEndpoints
 
         });
 
+        group.MapPut("/{id}", async (int id, EditProductDTO changedProduct, StoreContext dbContext) =>
+        {
+            var product = await dbContext.Products.FindAsync(id);
+
+            
+            
+        });
+
     }
 
 }
