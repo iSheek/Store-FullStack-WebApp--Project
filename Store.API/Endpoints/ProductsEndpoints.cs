@@ -21,7 +21,8 @@ public static class ProductsEndpoints
                                 product.Id,
                                 product.Name,
                                 product.Price,
-                                product.Category!.Name,
+                                product.CategoryId,
+                                product.Category != null ? product.Category.Name : null,
                                 product.ProductImage!.ImagePath
                             ))
                             .AsNoTracking()
@@ -31,13 +32,17 @@ public static class ProductsEndpoints
         group.MapGet("/{id}", async (int id, StoreContext dbContext) =>
         {
 
-            var product = await dbContext.Products.FindAsync(id);
+            var product = await dbContext.Products
+                    .Include(p => p.Category)
+                    .Include(p => p.ProductImage)
+                    .FirstOrDefaultAsync(p => p.Id == id);
 
             return product is null ? Results.NotFound() : Results.Ok(
                 new ProductDTO(
                     product.Id,
                     product.Name,
                     product.Price,
+                    product.CategoryId,
                     product.Category?.Name,
                     product.ProductImage?.ImagePath
                 )

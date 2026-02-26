@@ -27,3 +27,16 @@ Content-Type: application/json
     "price": 1.99,
     "categoryId": 1
 }
+
+###
+DELETE http://localhost:5146/products/4
+
+###
+PUT http://localhost:5146/products/2
+Content-Type: application/json
+
+{
+    "name": "Cutting board",
+    "price": 4.99,
+    "categoryId": 2
+}
