@@ -38,8 +38,8 @@ public static class ProductsEndpoints
                     product.Id,
                     product.Name,
                     product.Price,
-                    product.Category!.Name,
-                    product.ProductImage!.ImagePath
+                    product.Category?.Name,
+                    product.ProductImage?.ImagePath
                 )
             );
 
@@ -74,12 +74,30 @@ public static class ProductsEndpoints
 
         group.MapPut("/{id}", async (int id, EditProductDTO changedProduct, StoreContext dbContext) =>
         {
-            var product = await dbContext.Products.FindAsync(id);
+            var existingProduct = await dbContext.Products.FindAsync(id);
 
-            
-            
+            if (existingProduct is null)
+            {
+                return Results.NotFound();
+            }
+
+            existingProduct.Name = changedProduct.Name;
+            existingProduct.Price = changedProduct.Price;
+            existingProduct.CategoryId = changedProduct.CategoryId;
+            existingProduct.ProductImageId = changedProduct.ImagePathId;
+
+            await dbContext.SaveChangesAsync();
+
+            return Results.NoContent();
         });
 
+        group.MapDelete("/{id}", async (int id, StoreContext dbContext) =>
+        {
+            await dbContext.Products
+                            .Where(product => product.Id == id)
+                            .ExecuteDeleteAsync();
+            return Results.NoContent();
+        });
     }
 
 }

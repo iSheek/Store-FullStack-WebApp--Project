@@ -4,7 +4,7 @@ using Store.API.Models;
 
 namespace Store.API.Data;
 
-public static class DataExtension
+public static class DataExtensions
 {
     public static void MigrateDb(this WebApplication app)
     {
@@ -13,9 +13,9 @@ public static class DataExtension
             .GetRequiredService<StoreContext>();
         dbContext.Database.Migrate();
 
-        if(!dbContext.Categories.Any())
+        if(!dbContext.Set<Category>().Any())
         {
-            dbContext.Categories.AddRange(
+            dbContext.Set<Category>().AddRange(
                 new Category {Name = "Food"},
                 new Category {Name = "Cooking utensil"},
                 new Category {Name = "Other"}

@@ -46,7 +46,7 @@ namespace Store.API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -56,7 +56,7 @@ namespace Store.API.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("ProductImageId")
+                    b.Property<int?>("ProductImageId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -89,15 +89,11 @@ namespace Store.API.Migrations
                 {
                     b.HasOne("Store.API.Models.Category", "Category")
                         .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoryId");
 
                     b.HasOne("Store.API.Models.ProductImage", "ProductImage")
                         .WithMany()
-                        .HasForeignKey("ProductImageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductImageId");
 
                     b.Navigation("Category");
 
