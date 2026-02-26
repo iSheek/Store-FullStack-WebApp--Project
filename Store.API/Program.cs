@@ -13,9 +13,10 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
 
-// app.MapGet("/{id}", () => "");
 
 app.MapProductsEndpoints();
+app.MapCategoriesEndpoints();
+app.MapProductImagesEndpoints();
 
 
 app.MigrateDb();
