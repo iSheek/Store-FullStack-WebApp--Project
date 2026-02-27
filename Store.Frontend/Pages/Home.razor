@@ -1,0 +1,36 @@
+﻿@page "/"
+@using Store.Frontend.DTO
+@inject HttpClient Http
+
+<PageTitle>Simple Store</PageTitle>
+
+<h1>Store catalog</h1>
+<div class="catalog-container">
+    <div class="sidebar"></div>
+    <div class="products-area">
+        @if (products == null)
+        {
+            <p>Loading products...</p>
+        }
+        else 
+        {
+            foreach (var product in products)
+            {
+                <div class="product-card">
+                    @product.Name
+                    @product.Price
+                </div>
+            }
+        }
+    </div>
+</div>
+
+
+
+@code {
+    ProductDTO[]? products;
+    protected override async Task OnInitializedAsync()
+    {
+        products = await Http.GetFromJsonAsync<ProductDTO[]>("/products");
+    }
+}

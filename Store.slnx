@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="Store.API/Store.API.csproj" />
+  <Project Path="Store.Frontend/Store.Frontend.csproj" />
 </Solution>
