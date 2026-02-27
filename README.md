@@ -12,9 +12,6 @@ repo containing fullstack web application for store (solo project for learning p
 * **Backend**: .NET 10, Minimal APIs
 * **Database**: Postgresql Server (via Docker), Entity Framework Core
 
-## Screenshots
-*(TUTAJ WRZUĆ LINKI DO 1-2 SCREENÓW, np. widok strony głównej i formularza dodawania)*
-
 ## Prerequisites
 * [.NET 10 SDK](https://dotnet.microsoft.com/)
 * [Docker](https://www.docker.com/)
