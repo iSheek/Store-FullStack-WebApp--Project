@@ -1,0 +1,91 @@
+@page "/add-product"
+@using Store.Frontend.DTO
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<div class="form-container">
+    <h2>Add new product:</h2>
+    <EditForm Model="newProduct" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label>Product name:</label>
+            <InputText @bind-Value="newProduct.Name" class="form-control" />
+        </div>
+
+        <div>
+            <label>Price:</label>
+            <InputNumber @bind-Value="newProduct.Price" class="form-control" />
+        </div>
+
+        <div>
+            <label>Category:</label>
+            @if (categories is null)
+            {
+                <p>Loading categories...</p>
+            }
+            else 
+            {
+                <InputSelect @bind-Value="newProduct.CategoryId" class="form-control">
+                    <option value="">---Choose category---</option>
+                    @foreach (var category in categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </InputSelect>
+            }
+        </div>
+
+        <div>
+            <label>Image:</label>
+            <InputFile OnChange="LoadFile" accept="image/*" class="form-control"/>
+        </div>
+
+        <button type="submit">Save product</button>
+    </EditForm>
+</div>
+
+
+@code 
+{
+    private CreateProductDTO newProduct = new ();
+
+    private CategoryDTO[]? categories;
+
+    private IBrowserFile? selectedFile;
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await Http.GetFromJsonAsync<CategoryDTO[]>("/categories");
+    }
+    private async Task HandleSubmit()
+    {
+        if (selectedFile != null)
+        {
+            using var content = new MultipartFormDataContent();
+
+            var fileStream = selectedFile.OpenReadStream(maxAllowedSize: 1024*1024*10); // 10MB
+            var streamContent = new StreamContent(fileStream);
+
+            content.Add(streamContent, "file", selectedFile.Name);
+
+            var response = await Http.PostAsync("/upload-image", content);
+
+            if(response.IsSuccessStatusCode)
+            {
+                var imageId = await response.Content.ReadFromJsonAsync<int>();
+
+                newProduct.ImageId = imageId;
+            }
+
+        }
+
+        await Http.PostAsJsonAsync("/products", newProduct);
+        NavManager.NavigateTo("/");
+    }
+
+    private void LoadFile(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+}

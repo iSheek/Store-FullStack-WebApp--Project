@@ -4,9 +4,30 @@
 
 <PageTitle>Simple Store</PageTitle>
 
-<h1>Store catalog</h1>
+<div class="main-text">
+    <h1>Store catalog</h1>
+</div>
 <div class="catalog-container">
-    <div class="sidebar"></div>
+    <div class="sidebar">
+        @if (categories == null)
+        {
+            <p>Loading categories...</p>
+        }
+        else 
+        {
+            <ul>
+                <li @onclick="() => LoadProducts()">All</li>
+            @foreach (var category in categories)
+            {
+                <li @onclick="() => LoadProducts(category.Id)">
+                    @category.Name
+                </li>
+            }
+            </ul>
+        }
+
+        <a class="add-product-anchor" href="/add-product">Add Product</a>
+    </div>
     <div class="products-area">
         @if (products == null)
         {
@@ -17,8 +38,11 @@
             foreach (var product in products)
             {
                 <div class="product-card">
-                    @product.Name
-                    @product.Price
+                    <img src="http://localhost:5146/@product.ImagePath" alt="@product.Name" class="product-image"/>
+                    <h3>@product.Name</h3>
+                    <p>$@product.Price</p>
+
+                    <button class="btn btn-danger" @onclick="() => DeleteProduct(product.Id)">Delete</button>
                 </div>
             }
         }
@@ -29,8 +53,33 @@
 
 @code {
     ProductDTO[]? products;
+    CategoryDTO[]? categories;
     protected override async Task OnInitializedAsync()
     {
-        products = await Http.GetFromJsonAsync<ProductDTO[]>("/products");
+        await LoadProducts();
+        categories = await Http.GetFromJsonAsync<CategoryDTO[]>("/categories");
     }
+
+    private async Task LoadProducts(int? categoryId = null)
+    {
+        if (categoryId is null)
+        {
+            products = await Http.GetFromJsonAsync<ProductDTO[]>("/products");
+        }
+        else {
+            products = await Http.GetFromJsonAsync<ProductDTO[]>($"/products?categoryId={categoryId}");
+        }
+        
+    }
+
+    private async Task DeleteProduct(int id)
+    {
+        var response = await Http.DeleteAsync($"/products/{id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            products = await Http.GetFromJsonAsync<ProductDTO[]>("/products");
+        }
+    }
+
 }

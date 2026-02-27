@@ -76,12 +76,15 @@ public static class ProductsEndpoints
 
         group.MapPost("/", async (CreateProductDTO newProduct, StoreContext dbContext) =>
         {
+
+            Console.WriteLine($"DEBUG: RECEIVED: {newProduct.Name}, ImageId: {newProduct.ImageId}");
+
             Product product = new()
             {
                 Name = newProduct.Name,
                 Price = newProduct.Price,
                 CategoryId = newProduct.CategoryId,
-                ProductImageId = newProduct.ImagePathId
+                ProductImageId = newProduct.ImageId
             };
             
             dbContext.Products.Add(product);
@@ -119,11 +122,30 @@ public static class ProductsEndpoints
             return Results.NoContent();
         });
 
-        group.MapDelete("/{id}", async (int id, StoreContext dbContext) =>
-        {
-            await dbContext.Products
-                            .Where(product => product.Id == id)
-                            .ExecuteDeleteAsync();
+        group.MapDelete("/{id}", async (int id, StoreContext dbContext, IWebHostEnvironment env) =>
+        {   
+            var product = await dbContext.Products
+                                        .Include(p => p.ProductImage)
+                                        .FirstOrDefaultAsync(p => p.Id == id);
+            
+            if(product is null) return Results.NotFound();
+
+            if(product.ProductImage != null)
+            {
+                var filePath = Path.Combine(env.WebRootPath, product.ProductImage.ImagePath);
+
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+
+                dbContext.Set<ProductImage>().Remove(product.ProductImage);
+            }
+
+            dbContext.Products.Remove(product);
+
+            await dbContext.SaveChangesAsync();
+
             return Results.NoContent();
         });
 
