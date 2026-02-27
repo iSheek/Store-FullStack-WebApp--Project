@@ -4,6 +4,8 @@ GET http://localhost:5146/
 ###
 GET http://localhost:5146/products
 
+###
+GET http://localhost:5146/products?categoryId=2
 
 ###
 GET http://localhost:5146/products/2

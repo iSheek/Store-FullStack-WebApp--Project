@@ -13,8 +13,11 @@ public static class ProductsEndpoints
     {
         var group = app.MapGroup("/products");
 
-        group.MapGet("/", async (StoreContext dbContext) =>
-            await dbContext.Products
+        group.MapGet("/", async (StoreContext dbContext, int? categoryId) =>
+        {
+            if (categoryId is null)
+            {
+                return Results.Ok(await dbContext.Products
                             .Include(product => product.Category)
                             .Include(product => product.ProductImage)
                             .Select(product => new ProductDTO(
@@ -27,6 +30,26 @@ public static class ProductsEndpoints
                             ))
                             .AsNoTracking()
                             .ToListAsync());
+            }
+
+            else
+            {
+                        return Results.Ok(await dbContext.Products
+                            .Include(product => product.Category)
+                            .Include(product => product.ProductImage)
+                            .Where(product => product.CategoryId == categoryId)
+                            .Select(product => new ProductDTO(
+                                product.Id,
+                                product.Name,
+                                product.Price,
+                                product.CategoryId,
+                                product.Category != null ? product.Category.Name : null,
+                                product.ProductImage!.ImagePath
+                            ))
+                            .AsNoTracking()
+                            .ToListAsync());
+            } 
+    });
 
 
         group.MapGet("/{id}", async (int id, StoreContext dbContext) =>
@@ -103,6 +126,9 @@ public static class ProductsEndpoints
                             .ExecuteDeleteAsync();
             return Results.NoContent();
         });
+
+
+        
     }
 
 }

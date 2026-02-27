@@ -9,7 +9,26 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddStoreDb();
 
+const string AllowEverything = "AllowAll";
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: AllowEverything,
+                        policy =>
+                        {
+                            policy.AllowAnyHeader()
+                                    .AllowAnyMethod()
+                                    .AllowAnyOrigin();
+                        });
+});
+
+
+
 var app = builder.Build();
+
+app.UseCors(AllowEverything);
+app.UseStaticFiles();
 
 app.MapGet("/", () => "Hello World!");
 
