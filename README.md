@@ -20,11 +20,11 @@ repo containing fullstack web application for store (solo project for learning p
 
 1. Clone this repository and open a terminal in the folder containing the `.slnx` file.
 2. Start the database using Docker: 
-  docker-compose up -d
+  - docker-compose up -d
 3. Navigate to the API folder and run the backend: 
-  cd ./Store.API
-  dotnet run
+  - cd ./Store.API
+  - dotnet run
 4. Open a new terminal window (again from the folder with .slnx), navigate to the Frontend, and run it:
-  cd ./Store.Frontend
-  dotnet run
+  - cd ./Store.Frontend
+  - dotnet run
 5. Check the terminal for the frontend port (e.g., http://localhost:xxxx) and paste it into your browser.
